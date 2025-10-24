@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100以内加减乘除练习工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #5a67d8;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-group label {
+            font-weight: bold;
+            color: #4a5568;
+            font-size: 1.1em;
+        }
+
+        .toggle-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            color: #4a5568;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .question-area {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .question {
+            font-size: 3em;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-weight: bold;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .answer-input {
+            font-size: 2em;
+            padding: 15px 30px;
+            border: 3px solid #e2e8f0;
+            border-radius: 15px;
+            text-align: center;
+            width: 200px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-new {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+        }
+
+        .btn-new:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #5a67d8;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            font-weight: bold;
+            padding: 30px 60px;
+            border-radius: 20px;
+            animation: feedbackAnimation 0.5s ease;
+            z-index: 1000;
+        }
+
+        @keyframes feedbackAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .feedback.correct {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            box-shadow: 0 10px 40px rgba(72, 187, 120, 0.5);
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            box-shadow: 0 10px 40px rgba(245, 101, 101, 0.5);
+        }
+
+        .history {
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .history-item {
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            animation: slideIn 0.3s ease;
+        }
+
+        .history-item.correct {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .history-item.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        /* 滚动条样式 */
+        .history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .history::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+        }
+
+        .history::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 数学练习小助手</h1>
+        
+        <div class="settings">
+            <div class="setting-group">
+                <label>加法</label>
+                <button class="toggle-btn active" id="addition">➕</button>
+            </div>
+            <div class="setting-group">
+                <label>减法</label>
+                <button class="toggle-btn active" id="subtraction">➖</button>
+            </div>
+            <div class="setting-group">
+                <label>乘法</label>
+                <button class="toggle-btn" id="multiplication">✖️</button>
+            </div>
+            <div class="setting-group">
+                <label>除法</label>
+                <button class="toggle-btn" id="division">➗</button>
+            </div>
+        </div>
+
+        <div class="question-area">
+            <div class="question" id="question">点击"新题目"开始练习</div>
+            <input type="number" class="answer-input" id="answerInput" placeholder="?" disabled>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-submit" onclick="checkAnswer()">提交答案</button>
+            <button class="btn btn-new" onclick="generateQuestion()">新题目</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">总题数</div>
+                <div class="stat-value" id="totalQuestions">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">正确数</div>
+                <div class="stat-value" id="correctAnswers">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">正确率</div>
+                <div class="stat-value" id="accuracy">0%</div>
+            </div>
+        </div>
+
+        <div class="history" id="history"></div>
+    </div>
+
+    <script>
+        let currentQuestion = {};
+        let stats = {
+            total: 0,
+            correct: 0
+        };
+        let history = [];
+
+        // 运算符配置
+        const operators = {
+            addition: { symbol: '+', active: true },
+            subtraction: { symbol: '-', active: true },
+            multiplication: { symbol: '×', active: false },
+            division: { symbol: '÷', active: false }
+        };
+
+        // 切换运算符
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const operator = this.id;
+                operators[operator].active = !operators[operator].active;
+                this.classList.toggle('active');
+                
+                // 确保至少有一个运算符被选中
+                const hasActive = Object.values(operators).some(op => op.active);
+                if (!hasActive) {
+                    operators[operator].active = true;
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // 生成题目
+        function generateQuestion() {
+            const activeOperators = Object.entries(operators)
+                .filter(([_, op]) => op.active)
+                .map(([name, op]) => ({ name, symbol: op.symbol }));
+
+            const operator = activeOperators[Math.floor(Math.random() * activeOperators.length)];
+            
+            let a, b, answer;
+            
+            switch (operator.name) {
+                case 'addition':
+                    a = Math.floor(Math.random() * 100) + 1;
+                    b = Math.floor(Math.random() * (100 - a)) + 1;
+                    answer = a + b;
+                    break;
+                    
+                case 'subtraction':
+                    a = Math.floor(Math.random() * 100) + 1;
+                    b = Math.floor(Math.random() * a) + 1;
+                    answer = a - b;
+                    break;
+                    
+                case 'multiplication':
+                    a = Math.floor(Math.random() * 20) + 1;
+                    b = Math.floor(Math.random() * 20) + 1;
+                    answer = a * b;
+                    break;
+                    
+                case 'division':
+                    b = Math.floor(Math.random() * 20) + 1;
+                    answer = Math.floor(Math.random() * 20) + 1;
+                    a = b * answer;
+                    break;
+            }
+            
+            currentQuestion = { a, b, operator: operator.symbol, answer };
+            document.getElementById('question').textContent = `${a} ${operator.symbol} ${b} = ?`;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').disabled = false;
+            document.getElementById('answerInput').focus();
+        }
+
+        // 检查答案
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answerInput').value);
+            
+            if (isNaN(userAnswer)) {
+                alert('请输入一个数字！');
+                return;
+            }
+            
+            stats.total++;
+            const isCorrect = userAnswer === currentQuestion.answer;
+            
+            if (isCorrect) {
+                stats.correct++;
+                showFeedback('正确！🎉', true);
+            } else {
+                showFeedback(`错误！正确答案是 ${currentQuestion.answer}`, false);
+            }
+            
+            updateStats();
+            addToHistory(currentQuestion, userAnswer, isCorrect);
+            
+            document.getElementById('answerInput').disabled = true;
+            setTimeout(generateQuestion, 2000);
+        }
+
+        // 显示反馈
+        function showFeedback(message, isCorrect) {
+            const feedback = document.createElement('div');
+            feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 1500);
+        }
+
+        // 更新统计
+        function updateStats() {
+            document.getElementById('totalQuestions').textContent = stats.total;
+            document.getElementById('correctAnswers').textContent = stats.correct;
+            const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        // 添加到历史记录
+        function addToHistory(question, userAnswer, isCorrect) {
+            const historyItem = document.createElement('div');
+            historyItem.className = `history-item ${isCorrect ? 'correct' : 'incorrect'}`;
+            historyItem.textContent = `${question.a} ${question.operator} ${question.b} = ${userAnswer} (${isCorrect ? '✓' : '✗'} ${question.answer})`;
+            
+            const historyContainer = document.getElementById('history');
+            historyContainer.insertBefore(historyItem, historyContainer.firstChild);
+            
+            // 限制历史记录数量
+            while (historyContainer.children.length > 10) {
+                historyContainer.removeChild(historyContainer.lastChild);
+            }
+        }
+
+        // 回车键提交答案
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // 初始化
+        generateQuestion();
+    </script>
+</body>
+</html>
